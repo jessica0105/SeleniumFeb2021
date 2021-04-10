@@ -2,7 +2,6 @@ package selenium;
 
 import java.util.concurrent.TimeUnit;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -24,77 +23,84 @@ public class SeleniumPageFactory {
 	static LeerProperties prop = new LeerProperties();
 	static WebDriver driver;
 	static String path = System.getProperty("user.dir");
-
-	@FindBy(id = "txtUsername")
+	
+	
+	@FindBy(id="txtUsername")
 	WebElement txt_userName;
-
-	@FindBy(id = "txtPassword")
+	
+	@FindBy(css = "input#txtPassword")
 	WebElement txt_password;
-
-	@FindBy(id = "btnLogin")
+	
+	@FindBy(id="btnLogin")
 	WebElement btn_login;
-
-	@FindBy(id = "spanMessage")
+	
+	@FindBy(id="spanMessage")
 	WebElement text_mensajeDeError;
-
-	@FindBy(xpath = "//a[@id='welcome']")
+	
+	@FindBy(xpath="//a[@id='welcome']")
 	WebElement link_welcome;
-
+	
 	@BeforeTest
 	public void startWebDriver() {
 		try {
 			prop.getSystemProperties();
+			
 			String browser = System.getProperty("BROWSER");
 			String url = System.getProperty("URL");
 			switch (browser) {
+			
 			case "chrome":
-				System.setProperty("webdriver.chrome.driver", path + "\\chromedriver\\chromedriver.exe");
-				// opciones para abrir el explorador
+				System.setProperty("webdriver.chrome.driver",  path + "\\chromedriver\\chromedriver.exe");
 				ChromeOptions option = new ChromeOptions();
 				option.addArguments("--start-maximized");
 				option.addArguments("--incognito");
-				WebDriver driver = new ChromeDriver(option);
+				driver = new ChromeDriver(option);
 				driver.get(url);
 				break;
-			case "firefox":
-				System.setProperty("webdriver.gecko.driver", path + "\\geckodriver\\geckodriver.exe");
+			case "firefox": 
+				System.setProperty("webdriver.gecko.driver",  path + "\\geckodriver\\geckodriver.exe");
 				FirefoxOptions foption = new FirefoxOptions();
-				foption.addArguments("--start maximized");
+				foption.addArguments("--start-maximized");
 				foption.addArguments("--incognito");
 				driver = new FirefoxDriver(foption);
 				driver.get(url);
 				break;
 			case "edge":
-				System.setProperty("webdriver.edge.driver", path + "\\edgedriver\\msedgedriver.exe");
-				EdgeOptions eoption = new EdgeOptions();
-				eoption.addArguments("--start maximized");
-				eoption.addArguments("--incognito");
-				driver = new EdgeDriver(eoption);
+				System.setProperty("webdriver.edge.driver", path+"\\edgedriver\\msedgedriver.exe");
+				EdgeOptions eoptions = new EdgeOptions();
+				eoptions.addArguments("--start-maximized");
+				eoptions.addArguments("--incognito");
+				driver = new  EdgeDriver(eoptions);
 				driver.get(url);
 				break;
-
-			default:
-				System.out.println("El driver [" + browser + "] no está configurado para funcionar en este proyecto");
-			}// end switch
+				
+			default: System.out.println("El driver [ "+browser+" ] no esta configurado para funcionar en este proyecto");
+			}//end switch
 			PageFactory.initElements(driver, this);
 			driver.manage().timeouts().implicitlyWait(20, TimeUnit.MILLISECONDS);
-			Reporter.log("El web Driver fue inicializado [" + browser + "]", true);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("El driver no puede ser inicializado");
-		} // END CATCH
-	}// metodo starWebtDriver
-
-	@Test(enabled = true, priority = 3)
+			Reporter.log("El web Driver fue inicializado [ "+browser+" ]", true );
+			}catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("El driver no puede ser inicializado");
+			}
+}//end startWebDriver
+	
+	
+	
+	@Test(enabled = true, priority=3)
 	public void LoginFallido() {
-		txt_userName.sendKeys("Jessi");
+		txt_userName.sendKeys("Sergio");
 		Reporter.log("El usuario fue ingresado correctamente");
-		txt_password.sendKeys("admin12345");
+		txt_password.sendKeys("Admin12345");
 		Reporter.log("El password fue ingresado correctamente");
 		btn_login.click();
-		Reporter.log("Se dio clic en el botón de login");
+		Reporter.log("se dio click en el boton de login");
 		Assert.assertEquals(text_mensajeDeError.getText(), "Invalid credentials");
-		Reporter.log(text_mensajeDeError.getText(), true);
-	}// end loginFallido
-
-}// end class
+		Reporter.log(text_mensajeDeError.getText(),true);
+	}
+	
+	
+	
+	
+	
+}
