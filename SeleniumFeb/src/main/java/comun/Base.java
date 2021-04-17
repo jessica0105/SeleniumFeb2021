@@ -19,6 +19,7 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -29,6 +30,7 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -268,6 +270,7 @@ public class Base {
 
 	/**
 	 * @author Sergio
+	 * @param nStringame 
 	 * @Date 27-03-2021
 	 * @Description verifica que un WebElement exista
 	 * @param WebElement
@@ -461,7 +464,7 @@ public class Base {
 		 */
 		public void selectElementByValue(List<WebElement> element, String text) throws Exception {
 			try {
-				elementIsVisible(element.get(0));
+//				elementIsVisible(element.get(0));
 				for (int i = 0; i <= element.size(); i++) {
 
 					if (i >= element.size()) {
@@ -471,12 +474,13 @@ public class Base {
 
 					if (element.get(i).getText().contains(text)) {
 						scroll(element.get(i));
+						highlighElement(element.get(i));
 						click(element.get(i));
 						break;
 					}
 
 				} // end for
-				Reporter.log("The Element in the list was selected: " + text);
+				Reporter.log("The Element in the list was selected: " + text, true);
 
 			} catch (Exception e) {
 				Reporter.log("The Element is not the list: " + text);
@@ -498,8 +502,8 @@ public class Base {
 			Thread.sleep(2000);
 			if (driver != null) {
 
-//					driver.close();
-				driver.quit();
+				driver.close();
+//				driver.quit();
 				Thread.sleep(2000);
 				Reporter.log("Driver was quited ", true);
 			} else {
@@ -508,6 +512,32 @@ public class Base {
 
 		}// end method
 		 
-
+		/**
+		 * @Description selecciona un elemento del dropdown por el valor
+		 * @Author Jessica
+		 * @Date 17/04/2021
+		 * @Parameter N/A
+		 * @return N/A
+		 * @throws StaleElementReferenceException, NoSuchElementException
+		 */
+		
+		public void selectDropdownByValue(WebElement object, String selectValue) {
+			Select action = new Select(object);
+					int intentos = 0;
+					
+					while(intentos <= 5) {
+						try {
+							action.selectByValue(selectValue);
+							
+						}catch (StaleElementReferenceException e) {
+							Reporter.log("El elemento no puede ser seleccionado : ["+selectValue+" ]", true);
+							break;
+						}//end catch
+						catch (NoSuchElementException e) {
+							Reporter.log("El elemento no existe ["+selectValue+" ]", true);
+						}
+						intentos++;
+					}//end while
+		}
 	
 }
